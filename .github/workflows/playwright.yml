@@ -61,13 +61,18 @@ jobs:
         # Build test command based on inputs
         TEST_CMD="npx playwright test"
         
+        # On push events, run Chromium only by default
+        if [ "${{ github.event_name }}" = "push" ]; then
+          TEST_CMD="$TEST_CMD --project=chromium"
+        fi
+        
         # Add test suite filter if specified
         if [ "${{ github.event.inputs.test_suite }}" != "all" ] && [ "${{ github.event.inputs.test_suite }}" != "" ]; then
           TEST_CMD="$TEST_CMD tests/${{ github.event.inputs.test_suite }}.spec.ts"
         fi
         
-        # Add browser filter if specified
-        if [ "${{ github.event.inputs.browser }}" != "all" ] && [ "${{ github.event.inputs.browser }}" != "" ]; then
+        # Add browser filter if specified (not on push, which defaults to Chromium)
+        if [ "${{ github.event_name }}" != "push" ] && [ "${{ github.event.inputs.browser }}" != "all" ] && [ "${{ github.event.inputs.browser }}" != "" ]; then
           TEST_CMD="$TEST_CMD --project=${{ github.event.inputs.browser }}"
         fi
         
