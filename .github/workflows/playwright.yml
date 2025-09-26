@@ -74,10 +74,8 @@ jobs:
         # Add headed mode if specified (default is headless)
         if [ "${{ github.event.inputs.headed }}" == "true" ]; then
           TEST_CMD="$TEST_CMD --headed"
-        else
-          # Ensure headless mode for CI
-          TEST_CMD="$TEST_CMD --headed=false"
         fi
+        # Note: When --headed is not specified, Playwright runs in headless mode by default
         
         # Run the test command
         echo "Running: $TEST_CMD"
