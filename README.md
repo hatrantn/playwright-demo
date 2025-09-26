@@ -78,6 +78,21 @@ npm run test:report
 npx playwright show-report
 ```
 
+### 📊 Test Reports & Demo
+
+**Interactive Test Report:**
+[![Test Report](docs/index.html)](docs/index.html) - Click to view detailed test results
+
+**Demo Video:**
+[![Demo Video](docs/demo.mov)](docs/demo.mov) - Click to watch automation in action
+
+**Report Features:**
+- 📸 Screenshots of test failures
+- 🎥 Video recordings of test execution
+- 📊 Detailed test results and timing
+- 🔍 Step-by-step test execution logs
+- 📈 Test performance metrics
+
 ## ⚙️ Configuration
 
 ### Environment Variables (Optional)
