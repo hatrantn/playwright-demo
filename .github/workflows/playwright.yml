@@ -16,8 +16,13 @@ on:
           - register
           - login
           - search
-          - filter
+          - filter-products
           - forgot-password
+      test_grep:
+        description: 'Test pattern to match (e.g., "Sorting", "Login", etc.)'
+        required: false
+        default: ''
+        type: string
       browser:
         description: 'Browser to test'
         required: false

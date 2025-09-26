@@ -303,9 +303,10 @@ test.beforeEach(async ({ productPage }) => {
     });
   });
 
-  test.describe('Sorting', () => {
+  test.describe.only('Sorting', () => {
     test('should sort products by price low to high', async ({ productPage }) => {
       await productPage.navigateToSubcategory('Electronics', 'Cell phones');
+      
       // Sort products by price
       await productPage.sortBy('Price: Low to High');
 
@@ -316,7 +317,7 @@ test.beforeEach(async ({ productPage }) => {
       // Verify results are sorted
       expect(await productPage.getProductGridCount()).toBeGreaterThan(0);
 
-      // Verify results are sorted by price in ascending order
+      // Get prices and verify they are sorted
       const prices = await productPage.getProductPrices();
       expect(prices.length).toBeGreaterThan(0);
       
@@ -327,14 +328,18 @@ test.beforeEach(async ({ productPage }) => {
         return parseFloat(cleanPrice);
       }).filter(price => !isNaN(price));
       
+      // Ensure we have valid prices to compare
+      expect(numericPrices.length).toBeGreaterThan(1);
+      
       // Check that prices are in ascending order (low to high)
       for (let i = 1; i < numericPrices.length; i++) {
         expect(numericPrices[i]).toBeGreaterThanOrEqual(numericPrices[i - 1]);
       }
     });
 
-    test('should sort products by price hight to low', async ({ productPage }) => {
+    test('should sort products by price high to low', async ({ productPage }) => {
       await productPage.navigateToSubcategory('Electronics', 'Cell phones');
+      
       // Sort products by price
       await productPage.sortBy('Price: High to Low');
 
@@ -345,7 +350,7 @@ test.beforeEach(async ({ productPage }) => {
       // Verify results are sorted
       expect(await productPage.getProductGridCount()).toBeGreaterThan(0);
 
-      // Verify results are sorted by price in descending order
+      // Get prices and verify they are sorted
       const prices = await productPage.getProductPrices();
       expect(prices.length).toBeGreaterThan(0);
       
@@ -355,6 +360,9 @@ test.beforeEach(async ({ productPage }) => {
         const cleanPrice = price.replace(/[^\d.,]/g, '').replace(',', '');
         return parseFloat(cleanPrice);
       }).filter(price => !isNaN(price));
+      
+      // Ensure we have valid prices to compare
+      expect(numericPrices.length).toBeGreaterThan(1);
       
       // Check that prices are in descending order (high to low)
       for (let i = 1; i < numericPrices.length; i++) {

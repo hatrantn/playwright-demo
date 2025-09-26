@@ -170,7 +170,26 @@ export class SearchPage extends BasePage {
    * Sort search results
    */
   async sortBy(sortOption: string): Promise<void> {
+    await this.sortBySelect.click();
     await this.selectOption(this.sortBySelect, sortOption);
+
+    // Wait for loading to disappear (indicating sorting is complete)
+    try {
+      // Wait for loading icon to appear
+      await this.page.waitForSelector('.ajax-loading-block-window, .loading, .spinner, .fa-spinner, .fa-spin, [class*="loading"], [class*="spinner"], [class*="ajax"], .loading-overlay, .loading-mask', { 
+        timeout: 2000,
+        state: 'visible'
+      });
+      
+      // Wait for loading icon to disappear
+      await this.page.waitForSelector('.ajax-loading-block-window, .loading, .spinner, .fa-spinner, .fa-spin, [class*="loading"], [class*="spinner"], [class*="ajax"], .loading-overlay, .loading-mask', { 
+        timeout: 15000,
+        state: 'hidden'
+      });
+    } catch (error) {
+      // If no loading icon is found, wait for page to reload
+      await this.page.waitForLoadState('domcontentloaded');
+    }
   }
 
   /**

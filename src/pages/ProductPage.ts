@@ -104,6 +104,9 @@ export class ProductPage extends BasePage {
   async navigateToCategory(categoryName: string): Promise<void> {
     const categoryLink = this.categoryNavigationBlock.locator(`a:has-text("${categoryName}")`);
     await this.clickElement(categoryLink);
+    
+    // Wait for page to load
+    await this.page.waitForLoadState('domcontentloaded');
   }
 
   /**
@@ -116,6 +119,9 @@ export class ProductPage extends BasePage {
     // Then navigate to the subcategory
     const subcategoryLink = this.categoryNavigationBlock.locator(`a:has-text("${subcategoryName}")`);
     await this.clickElement(subcategoryLink);
+    
+    // Wait for page to load
+    await this.page.waitForLoadState('domcontentloaded');
   }
 
   /**
@@ -300,7 +306,37 @@ export class ProductPage extends BasePage {
    * Sort products by the specified option
    */
   async sortBy(sortOption: string): Promise<void> {
+    // Check if we're on the right page with sort dropdown
+    const isSortVisible = await this.productsOrderBy.isVisible({ timeout: 5000 });
+    
+    if (!isSortVisible) {
+      throw new Error('Sort dropdown not found on page');
+    }
+    
+    // Select the sort option
+    await this.productsOrderBy.click();
     await this.selectOption(this.productsOrderBy, sortOption);
+    
+    // Wait for loading to disappear (indicating sorting is complete)
+    try {
+      // Wait for loading icon to appear
+      await this.page.waitForSelector('.ajax-loading-block-window, .loading, .spinner, .fa-spinner, .fa-spin, [class*="loading"], [class*="spinner"], [class*="ajax"], .loading-overlay, .loading-mask', { 
+        timeout: 2000,
+        state: 'visible'
+      });
+      
+      // Wait for loading icon to disappear
+      await this.page.waitForSelector('.ajax-loading-block-window, .loading, .spinner, .fa-spinner, .fa-spin, [class*="loading"], [class*="spinner"], [class*="ajax"], .loading-overlay, .loading-mask', { 
+        timeout: 15000,
+        state: 'hidden'
+      });
+    } catch (error) {
+      // If no loading icon is found, wait for page to reload
+      await this.page.waitForLoadState('domcontentloaded');
+    }
+    
+    // Wait for products to be present
+    await this.page.waitForSelector('.item-box', { timeout: 10000 });
   }
 
   /**

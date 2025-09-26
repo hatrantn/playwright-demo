@@ -76,7 +76,7 @@ test.describe('Product Search', () => {
   });
 
   test('should sort search results by price ascending', async ({ searchPage }) => {
-    const searchTerm = 'computer';
+    const searchTerm = 'phone';
     
     await searchPage.search(searchTerm);
     await searchPage.sortByPriceAscending();
@@ -84,10 +84,25 @@ test.describe('Product Search', () => {
     // Verify results are sorted (prices should be in ascending order)
     const prices = await searchPage.getProductPrices();
     expect(prices.length).toBeGreaterThan(0);
+
+    // Convert price strings to numbers for comparison
+    const numericPrices = prices.map(price => {
+      // Remove currency symbols and convert to number
+      const cleanPrice = price.replace(/[^\d.,]/g, '').replace(',', '');
+      return parseFloat(cleanPrice);
+    }).filter(price => !isNaN(price));
+    
+    // Ensure we have valid prices to compare
+    expect(numericPrices.length).toBeGreaterThan(0);
+    
+    // Check that prices are in descending order (high to low)
+    for (let i = 1; i < numericPrices.length; i++) {
+      expect(numericPrices[i]).toBeGreaterThanOrEqual(numericPrices[i - 1]);
+    }
   });
 
   test('should sort search results by price descending', async ({ searchPage }) => {
-    const searchTerm = 'computer';
+    const searchTerm = 'phone';
     
     await searchPage.search(searchTerm);
     await searchPage.sortByPriceDescending();
@@ -95,6 +110,21 @@ test.describe('Product Search', () => {
     // Verify results are sorted (prices should be in descending order)
     const prices = await searchPage.getProductPrices();
     expect(prices.length).toBeGreaterThan(0);
+
+    // Convert price strings to numbers for comparison
+    const numericPrices = prices.map(price => {
+      // Remove currency symbols and convert to number
+      const cleanPrice = price.replace(/[^\d.,]/g, '').replace(',', '');
+      return parseFloat(cleanPrice);
+    }).filter(price => !isNaN(price));
+    
+    // Ensure we have valid prices to compare
+    expect(numericPrices.length).toBeGreaterThan(0);
+    
+    // Check that prices are in descending order (high to low)
+    for (let i = 1; i < numericPrices.length; i++) {
+      expect(numericPrices[i]).toBeLessThanOrEqual(numericPrices[i - 1]);
+    }
   });
 
   test('should sort search results by name ascending', async ({ searchPage }) => {
