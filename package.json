@@ -1,0 +1,39 @@
+{
+  "name": "playwright-demo",
+  "version": "1.0.0",
+  "description": "Comprehensive Playwright automation framework for nopCommerce demo site",
+  "main": "index.js",
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:debug": "playwright test --debug",
+    "test:ui": "playwright test --ui",
+    "test:report": "playwright show-report",
+    "test:register": "playwright test tests/register.spec.ts",
+    "test:login": "playwright test tests/login.spec.ts",
+    "test:forgot-password": "playwright test tests/forgot-password.spec.ts",
+    "test:search": "playwright test tests/search.spec.ts",
+    "test:filter": "playwright test tests/filter-products.spec.ts",
+    "test:smoke": "playwright test --grep @smoke",
+    "test:regression": "playwright test --grep @regression",
+    "install:browsers": "playwright install",
+    "codegen": "playwright codegen https://demo.nopcommerce.com"
+  },
+  "keywords": [
+    "playwright",
+    "automation",
+    "testing",
+    "e2e",
+    "nopcommerce"
+  ],
+  "author": "Test Automation Team",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@playwright/test": "^1.55.0",
+    "@types/node": "^24.5.2"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.2"
+  }
+}

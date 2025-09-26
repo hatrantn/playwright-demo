@@ -1,0 +1,90 @@
+name: Playwright Tests
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+    inputs:
+      test_suite:
+        description: 'Test suite to run'
+        required: false
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - register
+          - login
+          - search
+          - filter
+          - forgot-password
+      browser:
+        description: 'Browser to test'
+        required: false
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - chromium
+          - firefox
+          - webkit
+          - edge
+          - 'Mobile Chrome'
+          - 'Mobile Safari'
+      headed:
+        description: 'Run in headed mode'
+        required: false
+        default: false
+        type: boolean
+jobs:
+  test:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: lts/*
+    - name: Install dependencies
+      run: npm ci
+    - name: Install Playwright Browsers
+      run: npx playwright install --with-deps
+    - name: Show manual trigger info
+      if: github.event_name == 'workflow_dispatch'
+      run: |
+        echo "🚀 Manual Trigger Configuration:"
+        echo "Test Suite: ${{ github.event.inputs.test_suite }}"
+        echo "Browser: ${{ github.event.inputs.browser }}"
+        echo "Headed Mode: ${{ github.event.inputs.headed }}"
+    - name: Run Playwright tests
+      run: |
+        # Build test command based on inputs
+        TEST_CMD="npx playwright test"
+        
+        # Add test suite filter if specified
+        if [ "${{ github.event.inputs.test_suite }}" != "all" ] && [ "${{ github.event.inputs.test_suite }}" != "" ]; then
+          TEST_CMD="$TEST_CMD tests/${{ github.event.inputs.test_suite }}.spec.ts"
+        fi
+        
+        # Add browser filter if specified
+        if [ "${{ github.event.inputs.browser }}" != "all" ] && [ "${{ github.event.inputs.browser }}" != "" ]; then
+          TEST_CMD="$TEST_CMD --project=${{ github.event.inputs.browser }}"
+        fi
+        
+        # Add headed mode if specified (default is headless)
+        if [ "${{ github.event.inputs.headed }}" == "true" ]; then
+          TEST_CMD="$TEST_CMD --headed"
+        else
+          # Ensure headless mode for CI
+          TEST_CMD="$TEST_CMD --headed=false"
+        fi
+        
+        # Run the test command
+        echo "Running: $TEST_CMD"
+        eval $TEST_CMD
+    - uses: actions/upload-artifact@v4
+      if: ${{ !cancelled() }}
+      with:
+        name: playwright-report
+        path: playwright-report/
+        retention-days: 30
