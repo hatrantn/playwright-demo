@@ -303,7 +303,7 @@ test.beforeEach(async ({ productPage }) => {
     });
   });
 
-  test.describe.only('Sorting', () => {
+  test.describe('Sorting', () => {
     test('should sort products by price low to high', async ({ productPage }) => {
       await productPage.navigateToSubcategory('Electronics', 'Cell phones');
       
