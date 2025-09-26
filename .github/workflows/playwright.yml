@@ -1,4 +1,11 @@
 name: Playwright Tests
+
+# Allow public users to trigger workflows
+permissions:
+  contents: read
+  actions: write
+  pull-requests: write
+
 on:
   push:
     branches: [ main, master ]
@@ -61,6 +68,8 @@ jobs:
         echo "Test Suite: ${{ github.event.inputs.test_suite }}"
         echo "Browser: ${{ github.event.inputs.browser }}"
         echo "Headed Mode: ${{ github.event.inputs.headed }}"
+        echo "Triggered by: ${{ github.actor }}"
+        echo "Public access: ✅ Enabled"
     - name: Run Playwright tests
       run: |
         # Build test command based on inputs
